@@ -1,7 +1,7 @@
 package database
 
 import (
-	"gcfs/config"
+	"github.com/Alvarios/gcfs/config"
 	"github.com/couchbase/gocb/v2"
 )
 

@@ -2,9 +2,9 @@ package methods
 
 import (
 	"gcfs"
-	"gcfs/config"
-	"gcfs/config/data"
-	"gcfs/database/metadata"
+	"github.com/Alvarios/gcfs/config"
+	"github.com/Alvarios/gcfs/config/data"
+	"github.com/Alvarios/gcfs/database/metadata"
 	"github.com/couchbase/gocb/v2"
 	"net/http"
 	"strconv"

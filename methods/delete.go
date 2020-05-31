@@ -3,7 +3,7 @@ package methods
 
 import (
 	"gcfs"
-	"gcfs/config"
+	"github.com/Alvarios/gcfs/config"
 )
 
 func Delete(fileId string) error {

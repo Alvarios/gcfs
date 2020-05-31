@@ -2,8 +2,8 @@ package metadata
 
 import (
 	"fmt"
-	"gcfs/config"
-	"gcfs/config/data"
+	"github.com/Alvarios/gcfs/config"
+	"github.com/Alvarios/gcfs/config/data"
 	"reflect"
 )
 

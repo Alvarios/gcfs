@@ -20,6 +20,16 @@ You can use both modes together, depending on your configuration.
 
 ## Basic configuration
 
+To use GCFS, you can provide an optional configuration file, in JSON
+format. Pass the path to the configuration file in your ENV variables.
+
+*From your terminal:*
+
+`export GCFS_CONFIG="/path/to/my/configuration/file"`
+
+It is recommended to pass absolute path to the file, and not relative
+one.
+
 No parameter is required. You can run GCFS without any config file, though
 you'll have to comply to default values.
 

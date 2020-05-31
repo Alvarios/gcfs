@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"gcfs/methods"
+	"github.com/Alvarios/gcfs/methods"
 	"github.com/gorilla/mux"
 	"net/http"
 )

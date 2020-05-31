@@ -2,10 +2,10 @@ package gcfs
 
 import (
 	"fmt"
-	"gcfs/api"
-	"gcfs/api/middlewares"
-	"gcfs/config"
-	"gcfs/database"
+	"github.com/Alvarios/gcfs/api"
+	"github.com/Alvarios/gcfs/api/middlewares"
+	"github.com/Alvarios/gcfs/config"
+	"github.com/Alvarios/gcfs/database"
 	"github.com/couchbase/gocb/v2"
 	"github.com/gorilla/mux"
 	"github.com/justinas/alice"

@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/json"
 	"gcfs"
-	"gcfs/api/responses"
+	"github.com/Alvarios/gcfs/api/responses"
 	"github.com/couchbase/gocb/v2"
 	"log"
 	"net/http"

@@ -2,8 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"gcfs/config"
-	"gcfs/methods"
+	"github.com/Alvarios/gcfs/config"
+	"github.com/Alvarios/gcfs/methods"
 	"github.com/Alvarios/kushuh-go-utils/map_utils"
 	nefts_config "github.com/Alvarios/nefts-go/config"
 	"net/http"

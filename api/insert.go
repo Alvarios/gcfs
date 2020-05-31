@@ -2,8 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"gcfs/api/responses"
-	"gcfs/methods"
+	"github.com/Alvarios/gcfs/api/responses"
+	"github.com/Alvarios/gcfs/methods"
 	"net/http"
 )
 

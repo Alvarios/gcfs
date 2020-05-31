@@ -1,7 +1,7 @@
 package config
 
 import (
-	"gcfs/config/data"
+	"github.com/Alvarios/gcfs/config/data"
 	"github.com/jinzhu/configor"
 	"os"
 )

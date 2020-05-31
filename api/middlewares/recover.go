@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"encoding/json"
-	"gcfs/config/data"
+	"github.com/Alvarios/gcfs/config/data"
 	"log"
 	"net/http"
 )

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"gcfs/api/responses"
+	"github.com/Alvarios/gcfs/api/responses"
 	"net/http"
 )
 

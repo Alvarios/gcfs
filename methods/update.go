@@ -3,8 +3,8 @@ package methods
 import (
 	"fmt"
 	"gcfs"
-	"gcfs/config"
-	"gcfs/config/data"
+	"github.com/Alvarios/gcfs/config"
+	"github.com/Alvarios/gcfs/config/data"
 	"github.com/couchbase/gocb/v2"
 	"net/http"
 	"time"

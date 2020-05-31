@@ -1,7 +1,7 @@
 package metadata
 
 import (
-	"gcfs/config/data"
+	"github.com/Alvarios/gcfs/config/data"
 	"time"
 )
 

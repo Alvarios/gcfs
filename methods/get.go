@@ -2,7 +2,7 @@ package methods
 
 import (
 	"gcfs"
-	"gcfs/config"
+	"github.com/Alvarios/gcfs/config"
 	"github.com/couchbase/gocb/v2"
 	"time"
 )
