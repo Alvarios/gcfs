@@ -329,8 +329,7 @@ its required type. Use `interface` for undefined type.
 ```
 
 > 💡 Tip : types are string representing a go type. Custom types from your
- application are supported, however you'll need to prefix it with your
- package name, and run your code in go module mode.
+ application are not supported yet.
 
 ## Error handling
  
