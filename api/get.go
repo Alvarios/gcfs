@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/gcfs/methods"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -13,14 +14,14 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 	// Don't allow empty ids, no-op.
 	if fileId == "" {
-		http.Error(w, "No file id was provided in url.", http.StatusBadRequest)
+		http.Error(w, "no file id was provided in url", http.StatusBadRequest)
 		return
 	}
 
-	file, err := methods.Get(fileId)
+	file, lerr := methods.Get(fileId)
 
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if lerr != (*errors.Error)(nil) {
+		http.Error(w, lerr.Error(), http.StatusInternalServerError)
 		return
 	}
 

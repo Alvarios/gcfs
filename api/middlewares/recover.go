@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"encoding/json"
-	"github.com/Alvarios/gcfs/config/data"
+	"github.com/Alvarios/gcfs/config/errors"
 	"log"
 	"net/http"
 )
@@ -16,15 +16,15 @@ func Recover(next http.Handler) http.Handler {
 				log.Printf("panic : %+v", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Header().Set("Content-Type", "json/application")
-				panicError := &data.Error{
+				panicError := &errors.Error{
 					Code:    http.StatusInternalServerError,
-					Message: "Panic internal server error",
+					Message: "panic internal server error",
 				}
 
 				encodeError := json.NewEncoder(w).Encode(panicError)
 				if encodeError != nil {
 					// A recover error can be critical, though it is better to avoid shutting down a running server.
-					log.Printf("\n\nFailed to recover: %s", encodeError.Error())
+					log.Printf("\n\nfailed to recover: %s", encodeError.Error())
 					return
 				}
 

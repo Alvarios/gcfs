@@ -1,49 +1,53 @@
 package methods
 
 import (
-	"gcfs"
 	"github.com/Alvarios/gcfs/config"
-	"github.com/Alvarios/gcfs/config/data"
+	"github.com/Alvarios/gcfs/config/errors"
+	"github.com/Alvarios/gcfs/database"
 	"github.com/Alvarios/gcfs/database/metadata"
-	"github.com/couchbase/gocb/v2"
+	"github.com/Alvarios/kushuh-go-utils/number-utils"
 	"net/http"
+	"regexp"
 	"strconv"
-	"time"
 )
 
-func Insert(v interface{}, flag ...bool) (string, *data.Error) {
-	timestamp := time.Now().UnixNano() / int64(time.Millisecond)
+func Insert(v interface{}, id string) (string, *errors.Error) {
+	return InsertF(v, id, config.Main.Global.AutoProvide)
+}
 
-	autoProvided, err := v, &data.Error{}
-	if config.Main.Global.AutoProvide || (len(flag) > 0 && flag[0]) {
+func InsertF(v interface{}, id string, forceAutoProvide bool) (string, *errors.Error) {
+	timestamp := numberUtils.Timestamp()
+
+	autoProvided, err := v, &errors.Error{}
+	if config.Main.Global.AutoProvide || forceAutoProvide {
 		autoProvided, err = metadata.AutoProvide(v)
 	}
 
-	if err != nil {
+	if err != (*errors.Error)(nil) {
 		return "", err
 	}
 
-	m, err := metadata.CheckIntegrity(v)
-	if err != nil {
+	_, err = metadata.CheckIntegrity(autoProvided)
+	if err != (*errors.Error)(nil) {
 		return "", err
 	}
 
-	if m.Id == "" {
-		m.Id = strconv.FormatInt(timestamp, 10)
+	fileId := id
+	if id == "" {
+		fileId = strconv.FormatUint(timestamp, 10)
+	} else {
+		reTs := regexp.MustCompile(`\{ts}`)
+		fileId = reTs.ReplaceAllString(fileId, strconv.FormatUint(timestamp, 10))
 	}
 
-	fileId := m.Id
-
-	_, cerr := gcfs.Cluster.Bucket(config.Main.Database.BucketName).DefaultCollection().Upsert(
+	_, cerr := database.Bucket.DefaultCollection().Upsert(
 		fileId,
 		autoProvided,
-		&gocb.UpsertOptions{
-			Timeout: 5 * time.Second,
-		},
+		nil,
 	)
 
 	if cerr != nil {
-		return "", &data.Error{
+		return "", &errors.Error{
 			Code:    http.StatusInternalServerError,
 			Message: cerr.Error(),
 		}

@@ -2,8 +2,9 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/Alvarios/gcfs/api/responses"
+	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/gcfs/methods"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -14,13 +15,13 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 	// Don't allow empty ids, no-op.
 	if fileId == "" {
-		http.Error(w, "No file id was provided in url.", http.StatusBadRequest)
+		http.Error(w, "no file id was provided in url", http.StatusBadRequest)
 		return
 	}
 
 	deleteErr := methods.Delete(fileId)
 
-	if deleteErr != nil {
+	if deleteErr != (*errors.Error)(nil) {
 		http.Error(w, deleteErr.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -2,8 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"gcfs"
-	"github.com/Alvarios/gcfs/api/responses"
+	"github.com/Alvarios/gcfs/database"
 	"github.com/couchbase/gocb/v2"
 	"log"
 	"net/http"
@@ -13,7 +12,7 @@ func PingCouchbase(w http.ResponseWriter, _ *http.Request) {
 	// write header first to avoid flush error.
 	w.WriteHeader(http.StatusOK)
 
-	pings, err := gcfs.Cluster.Bucket("metadata").Ping(
+	pings, err := database.Bucket.Ping(
 		&gocb.PingOptions{
 			ReportID:     "medication",
 			ServiceTypes: []gocb.ServiceType{gocb.ServiceTypeKeyValue},

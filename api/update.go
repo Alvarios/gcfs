@@ -2,8 +2,9 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/Alvarios/gcfs/api/responses"
+	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/gcfs/methods"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -14,7 +15,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 
 	// Don't allow empty ids, no-op.
 	if fileId == "" {
-		http.Error(w, "No file id was provided in url.", http.StatusBadRequest)
+		http.Error(w, "no file id was provided in url", http.StatusBadRequest)
 		return
 	}
 
@@ -28,7 +29,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 
 	timestamp, uerr := methods.Update(fileId, file)
 
-	if uerr != nil {
+	if uerr != (*errors.Error)(nil) {
 		http.Error(w, uerr.Message, uerr.Code)
 		return
 	}

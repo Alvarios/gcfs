@@ -1,0 +1,34 @@
+{
+  "test": {
+    "message": "fakeMessage",
+    "code": 1
+  },
+  "metadata": {
+    "empty": {
+      "message": "no metadata provided",
+      "code": 400
+    },
+    "missing_url": {
+      "message": "no URL provided",
+      "code": 500
+    },
+    "general": {
+      "missing_name": {
+        "message": "no name provided",
+        "code": 400
+      },
+      "missing_format": {
+        "message": "no format provided.",
+        "code": 400
+      },
+      "missing_creation_time": {
+        "message": "no creation time provided",
+        "code": 400
+      },
+      "invalid_modification_time": {
+        "message": "modification time cannot be prior to creation time",
+        "code": 400
+      }
+    }
+  }
+}

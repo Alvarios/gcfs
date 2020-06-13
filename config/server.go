@@ -1,4 +1,4 @@
-package data
+package config
 
 type Logs struct {
 	Default string `json:"default"`
@@ -6,8 +6,8 @@ type Logs struct {
 }
 
 type Server struct {
-	Port      string `json:"port" default:"8080"`
-	Logs      Logs   `json:"logs"`
+	Port string `json:"port"`
+	Logs Logs   `json:"logs"`
 }
 
 func (s *Server) Provided() bool {

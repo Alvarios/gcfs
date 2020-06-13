@@ -2,11 +2,18 @@
 package methods
 
 import (
-	"gcfs"
-	"github.com/Alvarios/gcfs/config"
+	"github.com/Alvarios/gcfs/config/errors"
+	"github.com/Alvarios/gcfs/database"
 )
 
-func Delete(fileId string) error {
-	_, err := gcfs.Cluster.Bucket(config.Main.Database.BucketName).DefaultCollection().Remove(fileId, nil)
-	return err
+func Delete(fileId string) *errors.Error {
+	_, err := database.Bucket.DefaultCollection().Remove(fileId, nil)
+	if err != nil {
+		return &errors.Error{
+			Code: 500,
+			Message: err.Error(),
+		}
+	}
+
+	return nil
 }

@@ -1,5 +1,5 @@
 package methods
-
+/*
 import (
 	"gcfs"
 	"github.com/Alvarios/gcfs/config"
@@ -12,4 +12,4 @@ func Search(start, end int64, params nefts_config.Options) (*nefts_config.QueryR
 	params.Config.Bucket = config.Main.Database.BucketName
 
 	return nefts.Thread(start, end, params)
-}
+}*/

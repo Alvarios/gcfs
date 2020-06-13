@@ -2,8 +2,9 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/Alvarios/gcfs/api/responses"
+	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/gcfs/methods"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"net/http"
 )
 
@@ -18,9 +19,9 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Here the magic happens :)
-	fileId, ierr := methods.Insert(file, true)
+	fileId, ierr := methods.InsertF(file, "", true)
 
-	if ierr != nil {
+	if ierr != (*errors.Error)(nil) {
 		http.Error(w, ierr.Message, ierr.Code)
 		return
 	}

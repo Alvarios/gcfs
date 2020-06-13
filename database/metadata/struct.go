@@ -10,6 +10,5 @@ type GeneralData struct {
 
 type fileMetadata struct {
 	Url string `json:"url"`
-	Id string `json:"id"`
 	General GeneralData `json:"general"`
 }

@@ -1,9 +1,6 @@
 package api
 
-import (
-	"github.com/Alvarios/gcfs/api/responses"
-	"net/http"
-)
+import "net/http"
 
 func Ping(w http.ResponseWriter, _ *http.Request) {
 	// write header first to avoid flush error

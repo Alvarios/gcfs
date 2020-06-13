@@ -1,6 +1,6 @@
-package data
+package config
 
-import nefts_config "github.com/Alvarios/nefts-go/config"
+// import nefts_config "github.com/Alvarios/nefts-go/config"
 
 type Routes struct {
 	Ping         string `json:"ping"`
@@ -10,7 +10,7 @@ type Routes struct {
 	Get          string `json:"get"`
 	Update       string `json:"update"`
 	Search       string `json:"search"`
-	SearchOptions nefts_config.Options `json:"search_options"`
+	// SearchOptions nefts_config.Options `json:"search_options"`
 }
 
 func (r *Routes) Provided() bool {

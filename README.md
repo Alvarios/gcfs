@@ -1,6 +1,42 @@
 # Go-Couchbase File Server (GCFS)
 
-GCFS allows easy metadata management for file servers.
+GCFS is a metadata management tool for file servers.
+
+## Summary
+
+- [About](#about)
+- [GCFS Usage](#gcfs-usage)
+- [Configuration](#configuration)
+    - [Prerequisite](#prerequisite)
+        - [Couchbase instance](#couchbase-instance)
+        - [Server instance](#server-instance)
+    - [Basic setup](#basic-setup)
+    - [Api mode](#api-mode)
+    - [Extended setup](#extended-setup)
+        - [Database](#database)
+        - [Global](#global)
+            - [AutoProvide](#autoprovide)
+        - [Server](#server)
+            - [Port](#port)
+            - [Logs](#logs)
+        - [Metadata](#metadata-advanced)
+            - [Understanding metadata](#understanding-metadata)
+            - [Adding your own metadata](#adding-your-own-metadata)
+            - [Checking for required metadata](#checking-for-required-metadata)
+- [Methods](#methods)
+    - [Insert](#insert)
+    - [InsertF](#insertf)
+    - [Get](#get)
+    - [Update](#update)
+        - [Update specs](#update-specs)
+            - [Remove](#remove)
+            - [Upsert](#upsert)
+            - [Append](#append)
+    - [Delete](#delete)
+    - [AutoProvide (method)](#autoprovide-method)
+    - [CheckIntegrity](#checkintegrity)
+- [Error handling](#error-handling)
+- [Upcoming features](#upcoming-features)
 
 ## About
 
@@ -18,123 +54,221 @@ application.
 
 You can use both modes together, depending on your configuration.
 
-## Basic configuration
+## Configuration
 
-To use GCFS, you can provide an optional configuration file, in JSON
-format. Pass the path to the configuration file in your ENV variables.
+### Prerequisite
 
-*From your terminal:*
+#### Couchbase instance
 
-`export GCFS_CONFIG="/path/to/my/configuration/file"`
+You need a running Couchbase instance. If you don't want to provide a
+cluster configuration, you need to setup a local Couchbase instance with
+the following defaults :
 
-It is recommended to pass absolute path to the file, and not relative
-one.
+- a server running on 127.0.0.1
+- empty username and password
+- one bucket named "metadata"
 
-No parameter is required. You can run GCFS without any config file, though
-you'll have to comply to default values.
+To provide custom cluster configuration, please refer to the [database](#database)
+section below.
 
-*Full example (with default values)*
-```json
-{
-  "database": {
-    "address": "127.0.0.1",
-    "username": "",
-    "password": "",
-    "bucket_name": "metadata"
-  },
-  "global": {
-    "debug": false,
-    "auto_provide": false
-  },
-  "server": {
-    "port": "8080",
-    "logs": {
-      "default": "",
-      "error": ""
-    }
-  },
-  "routes": {
-    "ping": "",
-    "ping_database": "",
-    "insert": "",
-    "delete": "",
-    "get": "",
-    "update": "",
-    "search": ""
-  },
-  "metadata": {}
+#### Server instance
+
+For Api mode, you need your go app to run in server mode on a port.
+By default and for local development, this port is set to 8080.
+
+### Basic setup
+
+```go
+import (
+    "github.com/Alvarios/gcfs"
+    gcfsConfig "github.com/Alvarios/gcfs/config"
+)
+
+func main() {
+    gcfs.Setup(gcfsConfig.Configuration{})
 }
 ```
 
-### Database
+You can also pass a configuration interface to the setup method. This is
+required if you want to use the package in api mode.
 
-Couchbase server configuration.
+### Api mode
 
-| Key | Default | Description |
-| :--- | :--- | :--- |
-| address | 127.0.0.1 | Address of Couchbase Cluster. |
-| username | - | Credential for the Cluster. |
-| password | - | Credential for the Cluster. |
-| bucket_name | metadata | Bucket to save metadata to. |
+*coming soon*
 
-### Global
+### Extended setup
 
-| Key | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| debug | bool | false | Log debug information. |
-| auto_provide | bool | false | On insertion and upsertion, autofill some metadata. Only has effect in methods mode (always true in api mode). |
+```go
+import (
+    "github.com/Alvarios/gcfs"
+    gcfsConfig "github.com/Alvarios/gcfs/config"
+)
 
-### Server
+func main() {
+    gcfs.Setup(gcfsConfig.Configuration{
+        Database: gcfsConfig.Database{
+            BucketName: "metadata",
+            Address: "couchbase://127.0.0.1",
+            Username: "",
+            Password: "",
+            Bucket: nil,
+        },
+        Global: gcfsConfig.Global{
+            AutoProvide: false,
+        },
+        Server: gcfsConfig.Server{
+            Port: "8080",
+            Logs: gcfsConfig.Logs{
+                Default: "",
+                Error: "",
+            },
+        },
+        Metadata: nil,
+    })
+}
+```
 
-Server configuration.
+#### Database
 
-| Key | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| port | string | 8080 | Port to access server. |
-| logs | object | {} | Define log files (print to console by default). |
-| logs.default | string | - | Path to main log file. |
-| logs.error | string | - | Path to error log file. |
+Provide information to connect to your Couchbase cluster. See [Couchbase official documentation](https://docs.couchbase.com/go-sdk/current/hello-world/start-using-sdk.html#hello-couchbase)
+for more information.
 
-### Routes
+Alternatively, you can do the setup on your own and pass a Bucket pointer
+into the Database configuration. You can then ignore other configuration
+arguments :
 
-If any route is set, gcfs will create a pre-configured route for the specified
-action. You don't have to set every route, only the ones you need.
+```go
+import (
+    "github.com/Alvarios/gcfs"
+    gcfsConfig "github.com/Alvarios/gcfs/config"
+    "github.com/couchbase/gocb/v2"
+)
 
-| Route | Method | URL Params | Body | Return | Description |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| ping | Get | - | - | "pong" | Ping route. |
-| ping_database | Get | - | - | [Couchbase health check data](https://docs.couchbase.com/go-sdk/2.1/concept-docs/health-check.html). | Ping route for Couchbase server. |
-| insert | Post | - | [Metadata](#metadata) | id: file id. | Insert a file metadata to the server. |
-| delete | Delete | id: file id. | - | - | Delete a file metadata from the server. |
-| get | Get | id: file id. | - | [Metadata](#metadata) | Fetch file metadata from server. |
-| update | Post | id: file id. | json object | [Metadata](#metadata) | Partial update of a metadata. |
-| search | Post | - | [Search data](https://github.com/Alvarios/nefts-go#options) | [Metadata List](https://github.com/Alvarios/nefts-go#results) | Retrieve a set of metadata from server. |
+func main() {
+    gcfs.Setup(gcfsConfig.Configuration{
+        Database: gcfsConfig.Database{
+            Bucket: myCluster.Bucket(bucketname),
+        },
+    })
+}
+```
 
-### Metadata (params)
+#### Global
 
-An additional set of metadata to check on insertion. See the [Metadata](#metadata)
-section for more details.
+##### AutoProvide
 
-## Api mode
+Provides the default behavior for [insert method](#insert-method). Default is
+false.
 
-Api mode let you define pre-configured routes for your application. Just
-provide a route with the correct url parameters when needed, and GCFS will
-handle all the work for you.
+AutoProvide mode allows insert method to automatically fill up some metadata
+when not specified in the newly created document.
 
-> 💡 Tip : url parameter in go is given between curly braces.
- `/url/path/{url_parameter}/etc.`
+Only 2 fields currently support the autofill mode : `general.creation_time` and
+`general.modification_time`. Both are automatically set to current date.
 
-## Methods mode
+For more detail about metadata, please refer to [this section](#metadata).
 
-Methods mode is the default mode of gcfs. You can always use it, even when
-api mode is set up.
+#### Server
 
-Methods mode provides you some functions to interact directly with Couchbase.
-Thus, you have full control of your api behavior.
+Provide server configuration for Api mode.
+
+##### Port
+
+The port to run the server on. Running a server on a port from any domain
+makes it accessible via `domain:port` url. Domain is `localhost` for local
+server, or `127.0.0.x`.
+
+##### Logs
+
+Specify path for writing log to files. By default, a log is printed in the
+terminal.
+
+> Warning : this feature is currently unsupported.
+
+#### Metadata (advanced)
+
+##### Understanding metadata
+
+GCFS is a metadata utility, which stores textual information about a distant
+file. Metadata are used to represent a file without loading it.
+
+As a service, GCFS provides some pre-configured metadata. This metadata is
+present on every file handled by GCFS, and serve as a standard representation.
+
+Some pre-configured metadata are required, while other can be left blank.
+They are listed below.
+
+| Metadata | Required | AutoFillable | Type | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| url | true | - | string | url pointing to the actual file. |
+| general.name | true | - | string | name of the file. |
+| general.format | true | - | string | format of the file. |
+| general.size | - | - | int | size of the file in bytes. |
+| general.creation_time | true | true | uint64 | date of the file creation. **(1)** |
+| general.modification_time | - | true | uint64 | date of the file last modification. **(1)** |
+
+> **(1)** In milliseconds since January 1st, 1970, 00:00:00 UTC. Be careful this
+format is different from the one used by Go and UNIX systems, calculated from
+the same date but using nanoseconds. The reason we use milliseconds is to keep
+consistent with javascript and other web standards (since Couchbase is a JSON
+document database system).
+
+##### Adding your own metadata
+
+As Couchbase works with the very permissive JSON format, you are totally free
+to add any metadata to your file, as long as you leave the default provided
+ones. 
+
+You can even add some metadata under the general key. For example, a general.author
+to keep track of the file owner. GCFS treats a document like a basic interface{},
+so you have total freedom.
+
+Now you may want to work with your own standards. Your system will grow up in
+a specific direction, and maybe you'd like to require some more metadata. You
+can do a check on your own in methods mode, but that's time and processor
+costly. Instead, GCFS provides you a prebuilt and efficient solution.
+
+##### Checking for required metadata
+
+When adding a new document, GCFS will perform an integrity check to ensure
+every required field is present with a correctly typed value.
+
+You can add some required fields to check, with the Metadata field inside the
+Configuration interface.
+
+```go
+import (
+    "github.com/Alvarios/gcfs"
+    gcfsConfig "github.com/Alvarios/gcfs/config"
+)
+
+func main() {
+    gcfs.Setup(gcfsConfig.Configuration{
+        Metadata: map[string]interface{}{
+            "general": map[string]interface{}{
+                "author": "string",
+            },
+            "version": "string",
+        },
+    })
+}
+```
+
+For example, the above configuration will force every document to have a
+`general.author` and a `version` field, both of type string. If a document
+miss one of the above fields, it will be refused and the insertion will
+return an error.
+
+Metadata consist of key-value pairs : key points to a field, and value is a
+string representing a go type. To access nested fields, declare the parent
+field as a hardcoded `map[string]interface{}`, then every key declared
+inside will be considered as a child of its parent.
+
+## Methods
 
 ### Insert
 
-`fileId, err := gcfs_methods.Insert(fileMetadata)`
+`fileId, err := gcfsMethods.Insert(fileMetadata, fileId)`
 
 Insert metadata and returns the id of the generated tuple.
 
@@ -142,36 +276,43 @@ Insert metadata and returns the id of the generated tuple.
 
 | Name | Type | Description |
 | :--- | :--- | :--- |
-| fileMetadata | [Metadata](#metadata) | Video metadata object. |
+| fileMetadata | [Metadata](#metadata-advanced) | file metadata object. |
+| fileId | string | optional file id. |
 
 *return value*
 
 | Name | Type | Description |
 | :--- | :--- | :--- |
-| fileId | string | Id pointing to the newly created document. |
+| fileId | string | id pointing to the newly created document. |
 | err | [Error object](#error-handling) | - |
 
-### Delete
+### InsertF
 
-`err := gcfs_methods.Delete(fileId)`
+Shortcut for InsertFlagged. Allows to set custom flag and ignore Global
+configuration for a specific action.
 
-Delete metadata from database. Only returns an error.
+`fileId, err := gcfsMethods.Insert(fileMetadata, fileId, autoProvide)`
+
+Insert metadata and returns the id of the generated tuple.
 
 *arguments*
 
 | Name | Type | Description |
 | :--- | :--- | :--- |
-| fileId | string | Id pointing to the document. |
+| fileMetadata | [Metadata](#metadata-advanced) | file metadata object. |
+| fileId | string | optional file id. |
+| autoProvide | bool | set true to autofill missing values in the document. |
 
 *return value*
 
 | Name | Type | Description |
 | :--- | :--- | :--- |
+| fileId | string | id pointing to the newly created document. |
 | err | [Error object](#error-handling) | - |
 
 ### Get
 
-`fileMetadata, err := gcfs_methods.Get(fileId)`
+`fileMetadata, err := gcfsMethods.Get(fileId)`
 
 Retrieve metadata from database.
 
@@ -179,87 +320,76 @@ Retrieve metadata from database.
 
 | Name | Type | Description |
 | :--- | :--- | :--- |
-| fileId | string | Id pointing to the document. |
+| fileId | string | id pointing to the document. |
 
 *return value*
 
 | Name | Type | Description |
 | :--- | :--- | :--- |
-| fileMetadata | [Metadata](#metadata) | Video metadata object. |
-| err | [Error object](#error-handling) | - |
-
-### Search
-
-`queryResults, err := gcfs_methods.Search(start, end, options)`
-
-Search function using [nefts](https://github.com/Alvarios/nefts-go).
-
-*arguments*
-
-| Name | Type | Description |
-| :--- | :--- | :--- |
-| start | int64 | Index based pagination for the first element to retrieve. |
-| end | int64 | Index based pagination for the last element to retrieve. |
-| options | [nefts options](https://github.com/Alvarios/nefts-go#options) | More details on [nefts](https://github.com/Alvarios/nefts-go#options) page. **(1)** |
-
-**(1)** Config.Cluster and Config.Bucket options are overridden by gcfs configuration.
-
-*return value*
-
-| Name | Type | Description |
-| :--- | :--- | :--- |
-| queryResults | [nefts queryResults](https://github.com/Alvarios/nefts-go#results) | A list of video metadata. |
+| fileMetadata | [Metadata](#metadata) | file metadata object. |
 | err | [Error object](#error-handling) | - |
 
 ### Update
 
-`timestamp, err := methods.Update(fileId, fileMetadata)`
+`timestamp, err := gcfsMethods.Update(fileId, updateSpecs)`
 
-Partial update of a document.
+Perform a partial update of a document.
 
 *arguments*
 
 | Name | Type | Description |
 | :--- | :--- | :--- |
-| fileId | string | Id pointing to the document. |
-| fileMetadata | [Partial Metadata](#partial-metadata) | Video partial metadata object. |
+| fileId | string | id pointing to the document. |
+| fileMetadata | [Update specs](#update-specs) | - |
 
 *return value*
 
 | Name | Type | Description |
 | :--- | :--- | :--- |
-| timestamp | uint64 | Timestamp for the update. |
+| timestamp | uint64 | timestamp for the update. |
 | err | [Error object](#error-handling) | - |
 
-#### Partial metadata
+#### Update specs
 
 GCFS provides an easy, declarative way to perform a partial update of your
 metadata, using [gocb MutateIn](https://docs.couchbase.com/go-sdk/2.1/howtos/subdocument-operations.html#mutating) function.
 
 ```go
-partialMetadata := gcfs_methods.UpdateSpec{
+updateSpecs := gcfsMethods.UpdateSpec{
     Remove: []string{"key1", "key2", "key4.key4-2"},
     Upsert: map[string]interface{}{
         "key3": "new value",
         "key4": map[string]interface{}{
-            "key4-1": "new value"
-        }
+            "key4-1": "new value",
+        },
     },
     Append: map[string]interface{}{
-        "array-key": ["newValue1", "newValue2"]
-    }
+        "array-key": ["newValue1", "newValue2"],
+    },
 }
 ```
 
 ##### Remove
 
-A list of keys to remove from the document. Use the dot syntax for nested keys.
+A list of keys to remove from the document. Support the short dot syntax
+for nested keys.
 
 ##### Upsert
 
 Update a list of values. Each value in the given map will replace the
 equivalent one in the original document. If a path doesn't exist, it will be
 created.
+
+You can also use short dot syntax to access nested keys.
+
+```go
+updateSpecs := gcfsMethods.UpdateSpec{
+    Upsert: map[string]interface{}{
+        "key3": "new value",
+        "key4.key4-1": "new value",
+    },
+}
+```
 
 ##### Append
 
@@ -271,11 +401,29 @@ Append a list of values to an array key.
  Add a nested array if you want to append an array as an array, and not a list
  of values.
 
-### AutoProvide
+### Delete
+ 
+ `err := gcfsMethods.Delete(fileId)`
+ 
+ Delete metadata from database. Only returns an error.
+ 
+ *arguments*
+ 
+ | Name | Type | Description |
+ | :--- | :--- | :--- |
+ | fileId | string | Id pointing to the document. |
+ 
+ *return value*
+ 
+ | Name | Type | Description |
+ | :--- | :--- | :--- |
+ | err | [Error object](#error-handling) | - |
 
-`autoProvided, err = gcfs.metadata.AutoProvide(fileMetadata)`
+### AutoProvide (method)
 
-Auto fill metadata with default values. More details in the [Metadata](#metadata) section.
+`autoProvidedData, err = gcfsMetadata.AutoProvide(fileMetadata)`
+
+Auto fill metadata with default values. More details in the [Metadata](#metadata-advanced) section.
 
 ### CheckIntegrity
 
@@ -284,61 +432,33 @@ Auto fill metadata with default values. More details in the [Metadata](#metadata
 Check integrity of a dataset.
 
 > 💡 Tip : coreMetadata represents the default and required metadata.
- More details in the [Metadata](#metadata) section.
-
-## Metadata
-
-### Core metadata
-
-Metadata is a configurable JSON object that will link file to the
-client. Some metadata is required for video creation.
-
-Required metadata is provided below. You don't need to set them in config file, but you have to provide the ones
-marked as required (you can provide the others, or let gcfs fill them by default).
-
-| Key | Type | Default | Required | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| url | url | - | true | Link to the distant file. |
-| id | string | auto-generated | - | Id to use for the file. |
-| general | Interface | {} | true | Critical metadata. |
-| general.name | String | - | true | Name of the file. |
-| general.size | Number | - | true | Byte size of the file. |
-| general.creation_time | Date | Current Date<br/><br/>Nil if creation_time already present | - | Date of the first upload on distant server. |
-| general.modification_time | Date | Current Date<br/><br/>Nil if no creation_time | - | Date of the last upload on distant server. |
-| general.format | String | - | true | File format. |
-
-### Custom metadata
-
-Additionally, you can add a set of custom REQUIRED metadata. All data sent by
-your client will be uploaded to database. This parameter just serve to enforce
-some data to be present on insertion.
-
-Custom metadata are set of key-value pairs. Key is the metadata key, and value
-its required type. Use `interface` for undefined type.
-
-```json
-{
-  "metadata": {
-    "labels": "[]string",
-    "stats": {
-      "download_count": "uint64",
-      "status": "string"
-    }
-  }
-}
-```
-
-> 💡 Tip : types are string representing a go type. Custom types from your
- application are not supported yet.
+ More details in the [Metadata](#metadata-advanced) section.
 
 ## Error handling
  
- NEFTS returns a pointer to an error object adapted to web servers.
+ GCFS returns a pointer to an error object adapted to web servers.
  
  | Key | Type | Description |
  | :--- | :--- | :--- |
  | Code | int | The http status of the error. |
  | Message | string | Describes the nature of the error. |
+ 
+ > 💡 Tip : as a custom error object, `err == nil` wont work to check for errors.
+Instead, use the following guard clause : `err == (*gcfsErrors.Error)(nil)`.
+ 
+## Upcoming features
+
+- **Configuration > Metadata**
+    - Add a short syntax for nested fields "general.author"
+    - Ignore spaces and case for type declaration
+- **Methods > InsertF**
+    - Add Force flag to insert document without any check
+    - Add Strict flag to disable any non required field
+    - Merge flag arguments into an unique flag interface
+- **Methods**
+    - Search method and api with nefts package
+- **Documentation**
+    - Add an expert section to setup a valid test environment
  
  ## Copyright
  2020 Alvarios - [MIT license](https://github.com/Alvarios/gcfs/blob/master/LICENSE)

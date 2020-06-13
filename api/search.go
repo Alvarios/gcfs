@@ -1,5 +1,6 @@
 package api
 
+/*
 import (
 	"encoding/json"
 	"github.com/Alvarios/gcfs/config"
@@ -74,3 +75,4 @@ func Search(w http.ResponseWriter, r *http.Request) {
 
 	return
 }
+*/

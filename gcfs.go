@@ -6,7 +6,6 @@ import (
 	"github.com/Alvarios/gcfs/api/middlewares"
 	"github.com/Alvarios/gcfs/config"
 	"github.com/Alvarios/gcfs/database"
-	"github.com/couchbase/gocb/v2"
 	"github.com/gorilla/mux"
 	"github.com/justinas/alice"
 	"log"
@@ -14,18 +13,17 @@ import (
 	"time"
 )
 
-var Cluster *gocb.Cluster
+func Setup(c config.Configuration) {
+	config.LoadConfig(c)
+	err := database.Connect()
 
-func init() {
-	Cluster, err := database.Connect()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	// Launch server.
 	if config.Main.Server.Provided() {
 		fmt.Println("Starting server...")
-
-		if err != nil {
-			panic(err.Error())
-		}
 
 		if config.Main.Routes.Provided() {
 			mid := alice.New(middlewares.Log, middlewares.Recover)
@@ -50,10 +48,10 @@ func init() {
 			if config.Main.Routes.Get != "" {
 				r.Handle(config.Main.Routes.Get, mid.ThenFunc(api.Get)).Methods("GET")
 			}
-
+/*
 			if config.Main.Routes.Search != "" {
 				r.Handle(config.Main.Routes.Search, mid.ThenFunc(api.Search)).Methods("POST")
-			}
+			}*/
 
 			if config.Main.Routes.Update != "" {
 				r.Handle(config.Main.Routes.Update, mid.ThenFunc(api.Update)).Methods("POST")

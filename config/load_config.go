@@ -1,29 +1,52 @@
 package config
 
 import (
-	"github.com/Alvarios/gcfs/config/data"
-	"github.com/jinzhu/configor"
+	"github.com/Alvarios/gcfs/config/errors"
 	"os"
 )
 
 var Main Configuration
 
 type Configuration struct {
-	Database data.Database          `json:"database"`
-	Server   data.Server            `json:"server"`
-	Routes   data.Routes            `json:"routes"`
+	Database Database               `json:"database"`
+	Server   Server                 `json:"server"`
+	Routes   Routes                 `json:"routes"`
 	Metadata map[string]interface{} `json:"metadata"`
-	Global data.Global `json:"global"`
+	Global   Global                 `json:"global"`
 }
 
-func init() {
-	PathConfFile := os.Getenv("GCFS_CONFIG")
+func LoadConfigForTest(c Configuration) {
+	LoadConfig(c)
+	username := os.Getenv("GCFS_TEST_USERNAME")
+	password := os.Getenv("GCFS_TEST_PASSWORD")
+	bucketName := os.Getenv("GCFS_TEST_BUCKETNAME")
+	address := os.Getenv("GCFS_TEST_ADDRESS")
 
-	if PathConfFile == "" {
-		panic("no env variable found for GCFS_CONFIG.")
+	Main.Database.Username = username
+	Main.Database.Password = password
+
+	if bucketName != "" {
+		Main.Database.BucketName = bucketName
 	}
 
-	if err := configor.Load(&Main, PathConfFile); err != nil {
-		panic(err.Error())
+	if address != "" {
+		Main.Database.Address = address
+	}
+}
+
+func LoadConfig(c Configuration) {
+	Main = c
+	errors.LoadErrors()
+
+	if Main.Database.Address == "" {
+		Main.Database.Address = "couchbase://127.0.0.1"
+	}
+
+	if Main.Database.BucketName == "" {
+		Main.Database.BucketName = "metadata"
+	}
+
+	if Main.Server.Port == "" {
+		Main.Server.Port = "8080"
 	}
 }

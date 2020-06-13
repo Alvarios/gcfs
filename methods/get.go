@@ -1,14 +1,14 @@
 package methods
 
 import (
-	"gcfs"
-	"github.com/Alvarios/gcfs/config"
+	"github.com/Alvarios/gcfs/config/errors"
+	"github.com/Alvarios/gcfs/database"
 	"github.com/couchbase/gocb/v2"
 	"time"
 )
 
-func Get(fileId string) (*interface{}, error) {
-	data, getErr := gcfs.Cluster.Bucket(config.Main.Database.BucketName).DefaultCollection().Get(
+func Get(fileId string) (interface{}, *errors.Error) {
+	data, getErr := database.Bucket.DefaultCollection().Get(
 		fileId,
 		&gocb.GetOptions{
 			Timeout: 10 * time.Second,
@@ -16,15 +16,21 @@ func Get(fileId string) (*interface{}, error) {
 	)
 
 	if getErr != nil {
-		return nil, getErr
+		return nil, &errors.Error{
+			Code: 500,
+			Message: getErr.Error(),
+		}
 	}
 
 	var file interface{}
 	parseErr := data.Content(&file)
 
 	if parseErr != nil {
-		return nil, parseErr
+		return nil, &errors.Error{
+			Code: 500,
+			Message: parseErr.Error(),
+		}
 	}
 
-	return &file, nil
+	return file, nil
 }
