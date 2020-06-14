@@ -496,7 +496,9 @@ This section provides you information if you want to participate in the project.
 ### Setting up test environment
 
 Once you pulled the project, navigate through your terminal to the root folder
-(usually `gcfs/`). To launch the tests, run `go test -v ./...`.
+(usually `gcfs/`). To launch the tests, run :
+ 
+ `go test -v ./...`
 
 Test command will fail if you don't have a little setup environment.
 
@@ -508,7 +510,7 @@ your existing instances. If so, you can skip the following section.
 If you don't have any running instance, the easiest way is to download the
 [Couchbase Server from source](https://www.couchbase.com/downloads?family=couchbase-server).
 
-<img src="https://github.com/Alvarios/gcfs/blob/master/resources/images/Capture%20d%E2%80%99%C3%A9cran%202020-06-14%20%C3%A0%2016.38.03.png" width="500" alt="download couchbase">
+<img src="https://github.com/Alvarios/gcfs/blob/master/resources/images/Capture%20d%E2%80%99%C3%A9cran%202020-06-14%20%C3%A0%2016.38.03.png" width="800" alt="download couchbase">
 
 You can go for the free community edition. Select your platform and make sure
 you go for the last version (marked as current). Then follow the instruction.
@@ -516,7 +518,36 @@ you go for the last version (marked as current). Then follow the instruction.
 At the end, you should have a Couchbase service running on your computer.
 Connect to `http://127.0.0.1:8091/ui/index.html` from any web browser.
 
+Again, follow the instruction to setup your local Cluster. You can leave
+Username and Password blank, since we don't need any security here. Setup
+your Cluster on localhost (`127.0.0.1`).
 
+Finally, create a single bucket named 'metadata'. You can leave every parameter
+to default.
+
+### Using your own Couchbase instance
+
+If you want to use a pre-configured Couchbase instance, or just don't want to
+comply to default configuration above, then you'll need to set some
+environment variables before running any test, to tell GCFS where to look
+for.
+
+You don't need to provide each environment variables : only set one when
+its value is different in your configuration, from the default configuration
+below.
+
+| ENV | Default | Description |
+| :--- | :--- | :--- |
+| GCFS_TEST_ADDRESS | "couchbase://127.0.0.1" | address of your server. |
+| GCFS_TEST_USERNAME | "" | username to access the cluster. |
+| GCFS_TEST_PASSWORD | "" | password to access the cluster. |
+| GCFS_TEST_BUCKETNAME | "metadata" | bucket for running tests. |
+
+For example, if you have a local instance with some credentials, but you
+run on localhost with a metadata bucket, then you only need to export the
+following before running any test :
+
+`export GCFS_TEST_USERNAME="admin" GCFS_TEST_PASSWORD="123456"`
 
 ## Upcoming features
 
