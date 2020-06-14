@@ -2,8 +2,8 @@ package methods
 
 import (
 	"fmt"
-	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/gcfs/database"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"github.com/couchbase/gocb/v2"
 	"net/http"
 	"time"
@@ -15,7 +15,7 @@ type UpdateSpec struct {
 	Append map[string]interface{} `json:"append"`
 }
 
-func Update(id string, params UpdateSpec) (uint64, *errors.Error) {
+func Update(id string, params UpdateSpec) (uint64, *responses.Error) {
 	var specs []gocb.MutateInSpec
 
 	if params.Remove != nil {
@@ -28,7 +28,7 @@ func Update(id string, params UpdateSpec) (uint64, *errors.Error) {
 				value == "general.modification_time" ||
 				value == "general.format" ||
 				value == "url" {
-				return 0, &errors.Error{
+				return 0, &responses.Error{
 					Code: http.StatusNotAcceptable,
 					Message: fmt.Sprintf("you are trying to delete %s, which is a critical metadata", value),
 				}
@@ -40,19 +40,19 @@ func Update(id string, params UpdateSpec) (uint64, *errors.Error) {
 
 	if params.Upsert != nil {
 		upsertSpecs, err := flattenUpsertKeys(params.Upsert, "")
-		if err != (*errors.Error)(nil) {
+		if err != (*responses.Error)(nil) {
 			return 0, err
 		}
 
 		err = checkUpsertKeys(upsertSpecs)
-		if err != (*errors.Error)(nil) {
+		if err != (*responses.Error)(nil) {
 			return 0, err
 		}
 
 		for _, value := range upsertSpecs {
 			key, ok := value[0].(string)
 			if ok == false {
-				return 0, &errors.Error{
+				return 0, &responses.Error{
 					Code: http.StatusInternalServerError,
 					Message: "unable to parse key",
 				}
@@ -75,7 +75,7 @@ func Update(id string, params UpdateSpec) (uint64, *errors.Error) {
 		MutateIn(id, specs, &gocb.MutateInOptions{})
 
 	if err != nil {
-		return 0, &errors.Error{
+		return 0, &responses.Error{
 			Code: http.StatusInternalServerError,
 			Message: err.Error(),
 		}

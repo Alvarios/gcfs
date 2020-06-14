@@ -2,7 +2,7 @@ package metadata
 
 import (
 	"fmt"
-	"github.com/Alvarios/gcfs/config/errors"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"reflect"
 	"strings"
 )
@@ -11,12 +11,12 @@ func CheckCustomMetadata(
 	provided interface{},
 	expected map[string]interface{},
 	currentKey string,
-) *errors.Error {
+) *responses.Error {
 	providedMap, ok := provided.(map[string]interface{})
 
 	// Expect a map[string] object.
 	if ok == false {
-		return &errors.Error{
+		return &responses.Error{
 			Message: fmt.Sprintf(
 				"unexpected metadata value at %s : expected map[string]interface {}, got %s",
 				currentKey,
@@ -37,7 +37,7 @@ func CheckCustomMetadata(
 			buildKey == initialPrefix + ".general.size" ||
 			buildKey == initialPrefix + ".general.creation_time" ||
 			buildKey == initialPrefix + ".general.modification_time" {
-			return &errors.Error{
+			return &responses.Error{
 				Message: fmt.Sprintf("trying to redefine the core key %s", buildKey),
 				Code:    400,
 			}
@@ -45,7 +45,7 @@ func CheckCustomMetadata(
 
 		// Key is absent so metadata are incorrect.
 		if _, ok := providedMap[key]; ok == false {
-			return &errors.Error{
+			return &responses.Error{
 				Message: fmt.Sprintf("missing key %s in %s", key, currentKey),
 				Code:    400,
 			}
@@ -59,7 +59,7 @@ func CheckCustomMetadata(
 			err := CheckCustomMetadata(providedMap[key], newMap, buildKey)
 
 			// Nested error breaks the loop.
-			if err != (*errors.Error)(nil) {
+			if err != (*responses.Error)(nil) {
 				return err
 			}
 
@@ -68,7 +68,7 @@ func CheckCustomMetadata(
 
 		expectedType, ok := value.(string)
 		if ok == false {
-			return &errors.Error{
+			return &responses.Error{
 				Message: fmt.Sprintf(
 					"wrong expectation map provided : key %s is not a string or a map[string]",
 					buildKey,
@@ -80,7 +80,7 @@ func CheckCustomMetadata(
 		// Check if type matches.
 		t := reflect.TypeOf(providedMap[key]).String()
 		if t != expectedType {
-			return &errors.Error{
+			return &responses.Error{
 				Message: fmt.Sprintf(
 					"unexpected metadata value at %s : expected %s, got %s",
 					buildKey,

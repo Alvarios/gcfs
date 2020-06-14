@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"github.com/Alvarios/gcfs/config"
 	"github.com/Alvarios/gcfs/config/errors"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 )
 
-func CheckIntegrity(metadata interface{}) (*fileMetadata, *errors.Error) {
+func CheckIntegrity(metadata interface{}) (*fileMetadata, *responses.Error) {
 	// Nil values are castable to json, and we don't want that.
 	if metadata == nil {
 		return nil, &errors.Err.Metadata.Invalid

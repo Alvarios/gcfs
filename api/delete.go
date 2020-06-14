@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/gcfs/methods"
 	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"github.com/gorilla/mux"
@@ -21,7 +20,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 	deleteErr := methods.Delete(fileId)
 
-	if deleteErr != (*errors.Error)(nil) {
+	if deleteErr != (*responses.Error)(nil) {
 		http.Error(w, deleteErr.Error(), http.StatusInternalServerError)
 		return
 	}

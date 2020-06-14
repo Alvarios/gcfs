@@ -2,9 +2,9 @@ package methods
 
 import (
 	"github.com/Alvarios/gcfs/config"
-	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/gcfs/database"
 	"github.com/Alvarios/gcfs/database/metadata"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"testing"
 )
 
@@ -29,7 +29,7 @@ func TestDbInteractionBasicCycle(t *testing.T) {
 
 	// Return on test since one failure will broke the entire cycle.
 	fileId, err := InsertF(originalData, "", true)
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("couldn't insert file into database : %s", err.Error())
 		return
 	} else if fileId == "" {
@@ -38,14 +38,14 @@ func TestDbInteractionBasicCycle(t *testing.T) {
 	}
 
 	fileData, err := Get(fileId)
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("couldn't get file from database : %s", err.Error())
 	} else if fileData == nil {
 		t.Error("fetch returned empty data")
 	}
 
 	fileMetadata, err := metadata.CheckIntegrity(fileData)
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("returned data failed integrity check : %s", err.Error())
 	}
 
@@ -87,19 +87,19 @@ func TestDbInteractionBasicCycle(t *testing.T) {
 		},
 	})
 
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("couldn't update file into database : %s", err.Error())
 	}
 
 	fileData, err = Get(fileId)
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("couldn't get file from database : %s", err.Error())
 	} else if fileData == nil {
 		t.Error("fetch returned empty data")
 	}
 
 	fileMetadata, err = metadata.CheckIntegrity(fileData)
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("returned data failed integrity check : %s", err.Error())
 	}
 
@@ -142,12 +142,12 @@ func TestDbInteractionBasicCycle(t *testing.T) {
 	}
 
 	err = Delete(fileId)
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("couldn't delete file from database : %s", err.Error())
 	}
 
 	_, err = Get(fileId)
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Errorf("file %s wasn't correctly deleted from database", fileId)
 	}
 

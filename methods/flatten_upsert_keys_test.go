@@ -2,7 +2,7 @@ package methods
 
 import (
 	"fmt"
-	"github.com/Alvarios/gcfs/config/errors"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"testing"
 )
 
@@ -18,7 +18,7 @@ func TestFlattenUpsertKeys(t *testing.T) {
 	}
 
 	flattened, err := flattenUpsertKeys(data, "")
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("unable to flatten keys : %s", err.Error())
 	}
 
@@ -28,6 +28,7 @@ func TestFlattenUpsertKeys(t *testing.T) {
 		fmt.Sprint(flattened) == "[key2.key21 value21] [[key1 value1] [key2.key22.key221 value221]]" ||
 		fmt.Sprint(flattened) == "[key2.key21 value21] [key2.key22.key221 value221]] [[key1 value1]" ||
 		fmt.Sprint(flattened) == "[key2.key22.key221 value221]] [[key1 value1] [key2.key21 value21]" ||
+		fmt.Sprint(flattened) == "[[key1 value1] [key2.key22.key221 value221] [key2.key21 value21]]" ||
 		fmt.Sprint(flattened) == "[key2.key22.key221 value221]] [key2.key21 value21] [[key1 value1]") {
 		t.Errorf(
 			"wrong flattened map : expected something like [[key1 value1] [key2.key21 value21] [key2.key22.key221 value221]], got %s",

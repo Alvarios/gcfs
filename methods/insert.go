@@ -2,33 +2,33 @@ package methods
 
 import (
 	"github.com/Alvarios/gcfs/config"
-	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/gcfs/database"
 	"github.com/Alvarios/gcfs/database/metadata"
 	"github.com/Alvarios/kushuh-go-utils/number-utils"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"net/http"
 	"regexp"
 	"strconv"
 )
 
-func Insert(v interface{}, id string) (string, *errors.Error) {
+func Insert(v interface{}, id string) (string, *responses.Error) {
 	return InsertF(v, id, config.Main.Global.AutoProvide)
 }
 
-func InsertF(v interface{}, id string, forceAutoProvide bool) (string, *errors.Error) {
+func InsertF(v interface{}, id string, forceAutoProvide bool) (string, *responses.Error) {
 	timestamp := numberUtils.Timestamp()
 
-	autoProvided, err := v, &errors.Error{}
+	autoProvided, err := v, &responses.Error{}
 	if config.Main.Global.AutoProvide || forceAutoProvide {
 		autoProvided, err = metadata.AutoProvide(v)
 	}
 
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		return "", err
 	}
 
 	_, err = metadata.CheckIntegrity(autoProvided)
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		return "", err
 	}
 
@@ -47,7 +47,7 @@ func InsertF(v interface{}, id string, forceAutoProvide bool) (string, *errors.E
 	)
 
 	if cerr != nil {
-		return "", &errors.Error{
+		return "", &responses.Error{
 			Code:    http.StatusInternalServerError,
 			Message: cerr.Error(),
 		}

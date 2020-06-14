@@ -1,13 +1,13 @@
 package metadata
 
 import (
-	"github.com/Alvarios/gcfs/config/errors"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"testing"
 )
 
 func TestAutoProvide(t *testing.T) {
 	res, err := AutoProvide(fileMetadata{})
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("unable to autoprovide data : %s", err.Error())
 	}
 
@@ -32,7 +32,7 @@ func TestAutoProvide(t *testing.T) {
 			CreationTime: 123456789,
 		},
 	})
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("unable to autoprovide data : %s", err.Error())
 	}
 

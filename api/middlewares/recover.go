@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"encoding/json"
-	"github.com/Alvarios/gcfs/config/errors"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"log"
 	"net/http"
 )
@@ -16,7 +16,7 @@ func Recover(next http.Handler) http.Handler {
 				log.Printf("panic : %+v", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Header().Set("Content-Type", "json/application")
-				panicError := &errors.Error{
+				panicError := &responses.Error{
 					Code:    http.StatusInternalServerError,
 					Message: "panic internal server error",
 				}

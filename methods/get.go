@@ -1,13 +1,13 @@
 package methods
 
 import (
-	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/gcfs/database"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"github.com/couchbase/gocb/v2"
 	"time"
 )
 
-func Get(fileId string) (interface{}, *errors.Error) {
+func Get(fileId string) (interface{}, *responses.Error) {
 	data, getErr := database.Bucket.DefaultCollection().Get(
 		fileId,
 		&gocb.GetOptions{
@@ -16,7 +16,7 @@ func Get(fileId string) (interface{}, *errors.Error) {
 	)
 
 	if getErr != nil {
-		return nil, &errors.Error{
+		return nil, &responses.Error{
 			Code: 500,
 			Message: getErr.Error(),
 		}
@@ -26,7 +26,7 @@ func Get(fileId string) (interface{}, *errors.Error) {
 	parseErr := data.Content(&file)
 
 	if parseErr != nil {
-		return nil, &errors.Error{
+		return nil, &responses.Error{
 			Code: 500,
 			Message: parseErr.Error(),
 		}

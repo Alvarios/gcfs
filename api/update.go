@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/gcfs/methods"
 	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"github.com/gorilla/mux"
@@ -29,7 +28,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 
 	timestamp, uerr := methods.Update(fileId, file)
 
-	if uerr != (*errors.Error)(nil) {
+	if uerr != (*responses.Error)(nil) {
 		http.Error(w, uerr.Message, uerr.Code)
 		return
 	}

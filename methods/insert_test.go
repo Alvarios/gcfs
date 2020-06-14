@@ -2,8 +2,8 @@ package methods
 
 import (
 	"github.com/Alvarios/gcfs/config"
-	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/gcfs/database"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"regexp"
 	"testing"
 )
@@ -27,12 +27,12 @@ func TestInsertf(t *testing.T) {
 	}
 
 	_, err = InsertF(data, "", false)
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("insertf doesn't reject when provided incomplete metadata")
 	}
 
 	fileId, err := InsertF(data, "my_awesome_file_id", true)
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("unable to insert data with custom id : %s", err.Error())
 	}
 
@@ -41,12 +41,12 @@ func TestInsertf(t *testing.T) {
 	}
 
 	err = Delete(fileId)
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("unable to delete file %s : %s", fileId, err.Error())
 	}
 
 	fileId, err = InsertF(data, "my_awesome_file_id_{ts}", true)
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("unable to insert data with custom id : %s", err.Error())
 	}
 
@@ -56,7 +56,7 @@ func TestInsertf(t *testing.T) {
 	}
 
 	err = Delete(fileId)
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("unable to delete file %s : %s", fileId, err.Error())
 	}
 
@@ -87,18 +87,18 @@ func TestInsert(t *testing.T) {
 	}
 
 	_, err = Insert(data, "")
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("insert doesn't reject when provided incomplete metadata")
 	}
 
 	config.Main.Global.AutoProvide = true
 	fileId, err := Insert(data, "")
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("unable to insert data : %s", err.Error())
 	}
 
 	err = Delete(fileId)
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("unable to delete file %s : %s", fileId, err.Error())
 	}
 

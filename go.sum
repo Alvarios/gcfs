@@ -1,8 +1,8 @@
 github.com/Alvarios/gcfs v1.0.1/go.mod h1:eo6tBX9PeujA7lZArIQs3NIylnuc8PZ3fiHTPwGe4WY=
 github.com/Alvarios/kushuh-go-utils v1.0.0 h1:xN1fyIL1dZYAJ5TCTSqiIeQquuBwohaPna0lMixsqwM=
 github.com/Alvarios/kushuh-go-utils v1.0.0/go.mod h1:c8zIn88pLcIGPGXQb0UEmM3PpxMGfCMwt9wKm8fHFIY=
-github.com/Alvarios/kushuh-go-utils v1.3.1 h1:ctCJ8/BjZwplrsjm4NXwysHpzvb2usJjhQIczhiOgbs=
-github.com/Alvarios/kushuh-go-utils v1.3.1/go.mod h1:Q9TDRjUjIq2FgquZfwJuSEqSbI7eUaepWVIZMIkJSm8=
+github.com/Alvarios/kushuh-go-utils v1.3.2 h1:VDdxOcU1hoyd2YX+CRXnf6E7/KN86RA8zYwyfqtGfWQ=
+github.com/Alvarios/kushuh-go-utils v1.3.2/go.mod h1:Q9TDRjUjIq2FgquZfwJuSEqSbI7eUaepWVIZMIkJSm8=
 github.com/Alvarios/nefts-go v1.1.1/go.mod h1:dEVAKfSeK31TVx9Zs05R9rNdP7vh1G/uaZRpZNbjS1A=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=

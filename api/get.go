@@ -2,8 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/gcfs/methods"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -20,7 +20,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 	file, lerr := methods.Get(fileId)
 
-	if lerr != (*errors.Error)(nil) {
+	if lerr != (*responses.Error)(nil) {
 		http.Error(w, lerr.Error(), http.StatusInternalServerError)
 		return
 	}

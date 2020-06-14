@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/Alvarios/gcfs/config/errors"
-	numberUtils "github.com/Alvarios/kushuh-go-utils/number-utils"
+	"github.com/Alvarios/kushuh-go-utils/number-utils"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"strconv"
 )
 
-func AutoProvide(metadata interface{}) (interface{}, *errors.Error) {
+func AutoProvide(metadata interface{}) (interface{}, *responses.Error) {
 	// Nil values are castable to json, and we don't want that.
 	if metadata == nil {
 		return nil, &errors.Err.Metadata.Invalid
@@ -17,7 +18,7 @@ func AutoProvide(metadata interface{}) (interface{}, *errors.Error) {
 
 	jsonString, err := json.Marshal(metadata)
 	if err != nil {
-		return nil, &errors.Error{
+		return nil, &responses.Error{
 			Message: err.Error(),
 			Code: 500,
 		}
@@ -27,7 +28,7 @@ func AutoProvide(metadata interface{}) (interface{}, *errors.Error) {
 	d := json.NewDecoder(bytes.NewBuffer(jsonString))
 	d.UseNumber()
 	if err := d.Decode(&output); err != nil {
-		return nil, &errors.Error{
+		return nil, &responses.Error{
 			Message: err.Error(),
 			Code: 500,
 		}

@@ -4,6 +4,7 @@ import (
 	"github.com/Alvarios/gcfs/config"
 	"github.com/Alvarios/gcfs/config/errors"
 	"github.com/Alvarios/kushuh-go-utils/number-utils"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"testing"
 )
 
@@ -12,7 +13,7 @@ func TestCheckIntegrityArguments(t *testing.T) {
 
 	// Should reject non interface/map arguments.
 	_, err := CheckIntegrity(nil)
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error for nil argument call.")
 	} else if err != nil && err.Message != errors.Err.Metadata.Invalid.Message {
 		t.Errorf(
@@ -23,7 +24,7 @@ func TestCheckIntegrityArguments(t *testing.T) {
 	}
 
 	_, err = CheckIntegrity("fakeString")
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error for string argument call.")
 	} else if err != nil && err.Message != errors.Err.Metadata.Invalid.Message {
 		t.Errorf(
@@ -34,7 +35,7 @@ func TestCheckIntegrityArguments(t *testing.T) {
 	}
 
 	_, err = CheckIntegrity(645)
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error for number argument call.")
 	} else if err != nil && err.Message != errors.Err.Metadata.Invalid.Message {
 		t.Errorf(
@@ -45,7 +46,7 @@ func TestCheckIntegrityArguments(t *testing.T) {
 	}
 
 	_, err = CheckIntegrity(true)
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error for boolean argument call.")
 	} else if err != nil && err.Message != errors.Err.Metadata.Invalid.Message {
 		t.Errorf(
@@ -61,7 +62,7 @@ func TestCheckIntegrityWithCastError(t *testing.T) {
 	_, err := CheckIntegrity(map[string]interface{}{
 		"url": 998,
 	})
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error with non string url.")
 	} else if err != nil && err.Message != errors.Err.Metadata.Invalid.Message {
 		t.Errorf(
@@ -74,7 +75,7 @@ func TestCheckIntegrityWithCastError(t *testing.T) {
 	_, err = CheckIntegrity(map[string]interface{}{
 		"general": 998,
 	})
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error with non map general.")
 	} else if err != nil && err.Message != errors.Err.Metadata.Invalid.Message {
 		t.Errorf(
@@ -89,7 +90,7 @@ func TestCheckIntegrityWithCastError(t *testing.T) {
 			"name": []string{},
 		},
 	})
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error with non string general.name.")
 	} else if err != nil && err.Message != errors.Err.Metadata.Invalid.Message {
 		t.Errorf(
@@ -104,7 +105,7 @@ func TestCheckIntegrityWithCastError(t *testing.T) {
 			"format": []string{},
 		},
 	})
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error with non string general.format.")
 	} else if err != nil && err.Message != errors.Err.Metadata.Invalid.Message {
 		t.Errorf(
@@ -119,7 +120,7 @@ func TestCheckIntegrityWithCastError(t *testing.T) {
 			"creation_time": "timestamp",
 		},
 	})
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error with non number general.creation_time.")
 	} else if err != nil && err.Message != errors.Err.Metadata.Invalid.Message {
 		t.Errorf(
@@ -134,7 +135,7 @@ func TestCheckIntegrityWithCastError(t *testing.T) {
 			"modification_time": "timestamp",
 		},
 	})
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error with non number general.modification_time.")
 	} else if err != nil && err.Message != errors.Err.Metadata.Invalid.Message {
 		t.Errorf(
@@ -149,7 +150,7 @@ func TestCheckIntegrityWithCastError(t *testing.T) {
 			"size": "size in string",
 		},
 	})
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error with non number general.size.")
 	} else if err != nil && err.Message != errors.Err.Metadata.Invalid.Message {
 		t.Errorf(
@@ -169,7 +170,7 @@ func TestCheckIntegrityWithWrongMetadata(t *testing.T) {
 			"creation_time": numberUtils.Timestamp(),
 		},
 	})
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error when missing url.")
 	} else if err != nil && err.Message != errors.Err.Metadata.MissingUrl.Message {
 		t.Errorf(
@@ -187,7 +188,7 @@ func TestCheckIntegrityWithWrongMetadata(t *testing.T) {
 			"creation_time": numberUtils.Timestamp(),
 		},
 	})
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error when missing general.name.")
 	} else if err != nil && err.Message != errors.Err.Metadata.General.MissingName.Message {
 		t.Errorf(
@@ -205,7 +206,7 @@ func TestCheckIntegrityWithWrongMetadata(t *testing.T) {
 			"creation_time": numberUtils.Timestamp(),
 		},
 	})
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error when missing general.format.")
 	} else if err != nil && err.Message != errors.Err.Metadata.General.MissingFormat.Message {
 		t.Errorf(
@@ -224,7 +225,7 @@ func TestCheckIntegrityWithWrongMetadata(t *testing.T) {
 			"modification_time": numberUtils.Timestamp(),
 		},
 	})
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error when missing general.creation_time.")
 	} else if err != nil && err.Message != errors.Err.Metadata.General.MissingCreationTime.Message {
 		t.Errorf(
@@ -244,7 +245,7 @@ func TestCheckIntegrityWithWrongMetadata(t *testing.T) {
 			"modification_time": numberUtils.Timestamp() - 1000,
 		},
 	})
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Error("CheckIntegrity returned no error when general.modification_time is less than general.creation_time.")
 	} else if err != nil && err.Message != errors.Err.Metadata.General.InvalidModificationTime.Message {
 		t.Errorf(
@@ -266,7 +267,7 @@ func TestCheckIntegrity(t *testing.T) {
 		},
 	})
 
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("error checking metadata integrity : %s", err.Error())
 	}
 
@@ -279,7 +280,7 @@ func TestCheckIntegrity(t *testing.T) {
 		},
 	})
 
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("error checking metadata integrity : %s", err.Error())
 	}
 
@@ -295,7 +296,7 @@ func TestCheckIntegrity(t *testing.T) {
 		},
 	})
 
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("error checking metadata integrity : %s", err.Error())
 	}
 
@@ -316,7 +317,7 @@ func TestCheckIntegrity(t *testing.T) {
 		},
 	})
 
-	if err != (*errors.Error)(nil) {
+	if err != (*responses.Error)(nil) {
 		t.Errorf("error checking metadata integrity : %s", err.Error())
 	}
 
@@ -331,7 +332,7 @@ func TestCheckIntegrity(t *testing.T) {
 		},
 	})
 
-	if err == (*errors.Error)(nil) {
+	if err == (*responses.Error)(nil) {
 		t.Errorf("error checking metadata integrity : no error raised when not providing custom required metadata")
 	}
 }
