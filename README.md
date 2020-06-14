@@ -36,6 +36,10 @@ GCFS is a metadata management tool for file servers.
     - [AutoProvide (method)](#autoprovide-method)
     - [CheckIntegrity](#checkintegrity)
 - [Error handling](#error-handling)
+- [Developers section](#developers-section)
+    - [Setting up test environment](#setting-up-test-environment)
+    - [Setting up Couchbase from scratch](#setting-up-couchbase-from-scratch)
+    - [Using your own Couchbase instance](#using-your-own-couchbase-instance)
 - [Upcoming features](#upcoming-features)
 
 ## About
@@ -503,7 +507,8 @@ Once you pulled the project, navigate through your terminal to the root folder
 Test command will fail if you don't have a little setup environment.
 
 First of all, you need a Couchbase instance running. You can use one of
-your existing instances. If so, you can skip the following section.
+your existing instances. If so, you can skip the following section and go
+[here](#using-your-own-couchbase-instance).
 
 #### Setting up Couchbase from scratch
 
