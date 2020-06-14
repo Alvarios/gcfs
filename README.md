@@ -38,8 +38,8 @@ GCFS is a metadata management tool for file servers.
 - [Error handling](#error-handling)
 - [Developers section](#developers-section)
     - [Setting up test environment](#setting-up-test-environment)
-    - [Setting up Couchbase from scratch](#setting-up-couchbase-from-scratch)
-    - [Using your own Couchbase instance](#using-your-own-couchbase-instance)
+        - [Setting up Couchbase from scratch](#setting-up-couchbase-from-scratch)
+        - [Using your own Couchbase instance](#using-your-own-couchbase-instance)
 - [Upcoming features](#upcoming-features)
 
 ## About
@@ -530,7 +530,7 @@ your Cluster on localhost (`127.0.0.1`).
 Finally, create a single bucket named 'metadata'. You can leave every parameter
 to default.
 
-### Using your own Couchbase instance
+#### Using your own Couchbase instance
 
 If you want to use a pre-configured Couchbase instance, or just don't want to
 comply to default configuration above, then you'll need to set some
