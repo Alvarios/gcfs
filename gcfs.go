@@ -6,6 +6,9 @@ import (
 	"github.com/Alvarios/gcfs/api/middlewares"
 	"github.com/Alvarios/gcfs/config"
 	"github.com/Alvarios/gcfs/database"
+	"github.com/Alvarios/gcfs/database/metadata"
+	"github.com/Alvarios/gcfs/methods"
+	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"github.com/gorilla/mux"
 	"github.com/justinas/alice"
 	"log"
@@ -13,7 +16,30 @@ import (
 	"time"
 )
 
-func Setup(c config.Configuration) {
+type Configuration = config.Configuration
+type DbConfig = config.Database
+type GlobalConfig = config.Global
+type ServerConfig = config.Server
+
+type GeneralMetadata = metadata.GeneralData
+
+type Error = responses.Error
+
+type UpdateSpecs = methods.UpdateSpec
+
+var Insert = methods.Insert
+var InsertF = methods.InsertF
+var Get = methods.Get
+var Update = methods.Update
+var Delete = methods.Delete
+
+var AutoProvide = metadata.AutoProvide
+var CheckIntegrity = metadata.CheckIntegrity
+
+func Setup(c Configuration) {
+	// Avoid unused var error.
+	_, _, _, _, _, _, _ = Insert, InsertF, Get, Update, Delete, AutoProvide, CheckIntegrity
+
 	config.LoadConfig(c)
 	err := database.Connect()
 
