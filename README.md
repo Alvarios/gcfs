@@ -294,7 +294,7 @@ func main() {
     // Works with AutoFill = true.
     data := map[string]interface{}{
         "url": "/path/to/my/file",
-        "general": gcfs.GeneralMetadata{ // You can also pass a map[string]interface{}, as long as it contains all the required fields.
+        "general": gcfs.GeneralMetadata{ // You can also pass a map[string]interface{}, as long as it contains every required field.
             Name: "my awesome file",
             Format: "txt",
         },
@@ -488,7 +488,36 @@ object is retrieved from [kushuh-go-utils](https://www.github.com/Alvarios/kushu
  
  > 💡 Tip : as a custom error object, `err == nil` wont work to check for errors.
 Instead, use the following guard clause : `err == (*gcfsresponses.Error)(nil)`.
- 
+
+## Developers section
+
+This section provides you information if you want to participate in the project.
+
+### Setting up test environment
+
+Once you pulled the project, navigate through your terminal to the root folder
+(usually `gcfs/`). To launch the tests, run `go test -v ./...`.
+
+Test command will fail if you don't have a little setup environment.
+
+First of all, you need a Couchbase instance running. You can use one of
+your existing instances. If so, you can skip the following section.
+
+#### Setting up Couchbase from scratch
+
+If you don't have any running instance, the easiest way is to download the
+[Couchbase Server from source](https://www.couchbase.com/downloads?family=couchbase-server).
+
+<img src="https://github.com/Alvarios/gcfs/blob/master/resources/images/Capture%20d%E2%80%99%C3%A9cran%202020-06-14%20%C3%A0%2016.38.03.png" width="500" alt="download couchbase">
+
+You can go for the free community edition. Select your platform and make sure
+you go for the last version (marked as current). Then follow the instruction.
+
+At the end, you should have a Couchbase service running on your computer.
+Connect to `http://127.0.0.1:8091/ui/index.html` from any web browser.
+
+
+
 ## Upcoming features
 
 - **Configuration > Metadata**
@@ -500,8 +529,6 @@ Instead, use the following guard clause : `err == (*gcfsresponses.Error)(nil)`.
     - Merge flag arguments into an unique flag interface
 - **Methods**
     - Search method and api with nefts package
-- **Documentation**
-    - Add an expert section to setup a valid test environment
  
  ## Copyright
  2020 Alvarios - [MIT license](https://github.com/Alvarios/gcfs/blob/master/LICENSE)
