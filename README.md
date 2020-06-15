@@ -1,3 +1,5 @@
+[![<ORG_NAME>](https://circleci.com/gh/Alvarios/gcfs.svg?style=svg)](https://github.com/Alvarios/gcfs)
+
 # Go-Couchbase File Server (GCFS)
 
 GCFS is a metadata management tool for file servers.
