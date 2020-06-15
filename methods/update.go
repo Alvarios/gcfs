@@ -2,7 +2,9 @@ package methods
 
 import (
 	"fmt"
+	"github.com/Alvarios/gcfs/config"
 	"github.com/Alvarios/gcfs/database"
+	mapUtils "github.com/Alvarios/kushuh-go-utils/map-utils"
 	"github.com/Alvarios/kushuh-go-utils/router-utils/responses"
 	"github.com/couchbase/gocb/v2"
 	"net/http"
@@ -13,15 +15,23 @@ type UpdateSpec struct {
 	Remove []string `json:"remove"`
 	Upsert map[string]interface{} `json:"upsert"`
 	Append map[string]interface{} `json:"append"`
+	Force bool `json:"strict"`
 }
 
 func Update(id string, params UpdateSpec) (uint64, *responses.Error) {
 	var specs []gocb.MutateInSpec
 
+	if params.Remove != nil && config.Main.Global.Strict {
+		return 0, &responses.Error{
+			Code: http.StatusNotAcceptable,
+			Message: "you are forbidden delete any key in strict mode",
+		}
+	}
+
 	if params.Remove != nil {
 		for _, value := range params.Remove {
 			// Cannot remove critical data.
-			if value == "general" ||
+			if !params.Force && value == "general" ||
 				value == "general.name" ||
 				value == "general.size" ||
 				value == "general.creation_time" ||
@@ -39,26 +49,32 @@ func Update(id string, params UpdateSpec) (uint64, *responses.Error) {
 	}
 
 	if params.Upsert != nil {
-		upsertSpecs, err := flattenUpsertKeys(params.Upsert, "")
+		upsertSpecs := mapUtils.Flatten(params.Upsert, "")
+
+		err := checkUpsertKeys(upsertSpecs)
 		if err != (*responses.Error)(nil) {
 			return 0, err
 		}
 
-		err = checkUpsertKeys(upsertSpecs)
-		if err != (*responses.Error)(nil) {
-			return 0, err
-		}
+		for key, value := range upsertSpecs {
+			if config.Main.Global.Strict && !params.Force {
+				match := false
+				for k, _ := range config.Main.Metadata {
+					if k == key {
+						match = true
+						break
+					}
+				}
 
-		for _, value := range upsertSpecs {
-			key, ok := value[0].(string)
-			if ok == false {
-				return 0, &responses.Error{
-					Code: http.StatusInternalServerError,
-					Message: "unable to parse key",
+				if match == false {
+					return 0, &responses.Error{
+						Code: http.StatusNotAcceptable,
+						Message: fmt.Sprintf("you are trying to add key %s, which is not an allowed metadata", key),
+					}
 				}
 			}
 
-			specs = append(specs, gocb.UpsertSpec(key, value[1], &gocb.UpsertSpecOptions{}))
+			specs = append(specs, gocb.UpsertSpec(key, value, &gocb.UpsertSpecOptions{}))
 		}
 	}
 

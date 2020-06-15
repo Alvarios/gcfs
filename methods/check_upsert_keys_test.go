@@ -37,16 +37,16 @@ func TestCheckKeyType(t *testing.T) {
 }
 
 func TestCheckUpsertKeys(t *testing.T) {
-	err := checkUpsertKeys([][]interface{}{
-		{"key", "value"},
+	err := checkUpsertKeys(map[string]interface{}{
+		"key": "value",
 	})
 	if err != (*responses.Error)(nil) {
 		t.Errorf("checkUpsertKeys failed : %s", err.Error())
 	}
 
-	err = checkUpsertKeys([][]interface{}{
-		{"key", "value"},
-		{"url", ""},
+	err = checkUpsertKeys(map[string]interface{}{
+		"key": "value",
+		"url": "",
 	})
 	if err == (*responses.Error)(nil) {
 		t.Errorf("checkUpsertKeys allowed non valid url value")
@@ -54,9 +54,9 @@ func TestCheckUpsertKeys(t *testing.T) {
 		t.Errorf("unexpected error message : expected 'trying to assign empty value to url key', got %s", err.Message)
 	}
 
-	err = checkUpsertKeys([][]interface{}{
-		{"key", "value"},
-		{"general.name", ""},
+	err = checkUpsertKeys(map[string]interface{}{
+		"key": "value",
+		"general.name": "",
 	})
 	if err == (*responses.Error)(nil) {
 		t.Errorf("checkUpsertKeys allowed non valid general.name value")
@@ -64,9 +64,9 @@ func TestCheckUpsertKeys(t *testing.T) {
 		t.Errorf("unexpected error message : expected 'trying to assign empty value to general.name key', got %s", err.Message)
 	}
 
-	err = checkUpsertKeys([][]interface{}{
-		{"key", "value"},
-		{"general.format", ""},
+	err = checkUpsertKeys(map[string]interface{}{
+		"key": "value",
+		"general.format": "",
 	})
 	if err == (*responses.Error)(nil) {
 		t.Errorf("checkUpsertKeys allowed non valid general.format value")
@@ -74,9 +74,9 @@ func TestCheckUpsertKeys(t *testing.T) {
 		t.Errorf("unexpected error message : expected 'trying to assign empty value to general.format key', got %s", err.Message)
 	}
 
-	err = checkUpsertKeys([][]interface{}{
-		{"key", "value"},
-		{"general.creation_time", ""},
+	err = checkUpsertKeys(map[string]interface{}{
+		"key": "value",
+		"general.creation_time": "",
 	})
 	if err == (*responses.Error)(nil) {
 		t.Errorf("checkUpsertKeys allowed non valid general.creation_time value")
@@ -84,9 +84,9 @@ func TestCheckUpsertKeys(t *testing.T) {
 		t.Errorf("unexpected error message : expected 'trying to update general.creation_time key with  of type string, which is forbidden', got %s", err.Message)
 	}
 
-	err = checkUpsertKeys([][]interface{}{
-		{"key", "value"},
-		{"general.modification_time", ""},
+	err = checkUpsertKeys(map[string]interface{}{
+		"key": "value",
+		"general.modification_time": "",
 	})
 	if err == (*responses.Error)(nil) {
 		t.Errorf("checkUpsertKeys allowed non valid general.modification_time value")
@@ -94,33 +94,13 @@ func TestCheckUpsertKeys(t *testing.T) {
 		t.Errorf("unexpected error message : expected 'trying to update general.modification_time key with  of type string, which is forbidden', got %s", err.Message)
 	}
 
-	err = checkUpsertKeys([][]interface{}{
-		{"key", "value"},
-		{"general", 18},
+	err = checkUpsertKeys(map[string]interface{}{
+		"key": "value",
+		"general": 18,
 	})
 	if err == (*responses.Error)(nil) {
 		t.Errorf("checkUpsertKeys allowed non valid general value")
 	} else if err.Message != "trying to update general key with 18 of type int, which is forbidden" {
 		t.Errorf("unexpected error message : expected 'trying to update general key with 18 of type int, which is forbidden', got %s", err.Message)
-	}
-
-	err = checkUpsertKeys([][]interface{}{
-		{"key", "value"},
-		{23, 18},
-	})
-	if err == (*responses.Error)(nil) {
-		t.Errorf("checkUpsertKeys allowed non string key")
-	} else if err.Message != "non string key provided in upsert parameters : encountered 23 of type int" {
-		t.Errorf("unexpected error message : expected 'non string key provided in upsert parameters : encountered 23 of type int', got %s", err.Message)
-	}
-
-	err = checkUpsertKeys([][]interface{}{
-		{"key", "value"},
-		{"", 18},
-	})
-	if err == (*responses.Error)(nil) {
-		t.Errorf("checkUpsertKeys allowed empty key")
-	} else if err.Message != "empty key not allowed" {
-		t.Errorf("unexpected error message : expected 'empty key not allowed', got %s", err.Message)
 	}
 }

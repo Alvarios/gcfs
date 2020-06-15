@@ -28,7 +28,7 @@ func TestDbInteractionBasicCycle(t *testing.T) {
 	}
 
 	// Return on test since one failure will broke the entire cycle.
-	fileId, err := InsertF(originalData, "", true)
+	fileId, err := InsertF(originalData, "", InsertFlags{AutoProvide: true})
 	if err != (*responses.Error)(nil) {
 		t.Errorf("couldn't insert file into database : %s", err.Error())
 		return

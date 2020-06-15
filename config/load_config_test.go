@@ -22,4 +22,8 @@ func TestLoadConfig(t *testing.T) {
 	if Main.Database.Password != "" {
 		t.Errorf("Unexpected value during config initialization : expected empty for Database.Password, got %s", Main.Database.Password)
 	}
+
+	if Main.Routes.Provided() == true {
+		t.Error("Provided() detect routes although none are provided")
+	}
 }

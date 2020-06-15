@@ -16,9 +16,9 @@ GCFS is a metadata management tool for file servers.
         - [Database](#database)
         - [Global](#global)
             - [AutoProvide](#autoprovide)
+            - [Strict](#strict)
         - [Server](#server)
             - [Port](#port)
-            - [Logs](#logs)
         - [Metadata](#metadata-advanced)
             - [Understanding metadata](#understanding-metadata)
             - [Adding your own metadata](#adding-your-own-metadata)
@@ -26,6 +26,10 @@ GCFS is a metadata management tool for file servers.
 - [Methods](#methods)
     - [Insert](#insert)
     - [InsertF](#insertf)
+        - [Insert flags](#insert-flags)
+            - [AutoProvide flag](#autoprovide-flag)
+            - [Strict flag](#strict-flag)
+            - [Force flag](#force-flag)
     - [Get](#get)
     - [Update](#update)
         - [Update specs](#update-specs)
@@ -119,6 +123,7 @@ func main() {
         },
         Global: gcfs.GlobalConfig{
             AutoProvide: false,
+            Strict: false,
         },
         Server: gcfs.ServerConfig{
             Port: "8080",
@@ -176,6 +181,11 @@ Only 2 fields currently support the autofill mode : `general.creation_time` and
 `general.modification_time`. Both are automatically set to current date.
 
 For more detail about metadata, please refer to [this section](#metadata).
+
+##### Strict
+
+Strict mode only enables required metadata for insertion and update of a
+document. It will reject any attempt to add unauthorized metadata.
 
 #### Server
 
@@ -337,7 +347,7 @@ func main() {
 Shortcut for InsertFlagged. Allows to set custom flag and ignore Global
 configuration for a specific action.
 
-`fileId, err := gcfs.InsertF(fileMetadata, fileId, autoProvide)`
+`fileId, err := gcfs.InsertF(fileMetadata, fileId, flags)`
 
 Insert metadata and returns the id of the generated tuple.
 
@@ -347,7 +357,7 @@ Insert metadata and returns the id of the generated tuple.
 | :--- | :--- | :--- |
 | fileMetadata | map[string]interface{} | file metadata object. |
 | fileId | string | optional file id. |
-| autoProvide | bool | set true to autofill missing values in the document. |
+| flags | [gcfs.InsertFlags](#insert-flags) | override default configuration. |
 
 *return value*
 
@@ -355,6 +365,52 @@ Insert metadata and returns the id of the generated tuple.
 | :--- | :--- | :--- |
 | fileId | string | id pointing to the newly created document. |
 | err | [Error object](#error-handling) | - |
+
+#### Insert Flags
+
+```go
+package my_package
+
+import (
+    "github.com/Alvarios/gcfs"
+    "log"
+)
+
+func main() {
+    // Works with AutoFill = true.
+    data := map[string]interface{}{
+        "url": "/path/to/my/file",
+        "general": gcfs.GeneralMetadata{ // You can also pass a map[string]interface{}, as long as it contains every required field.
+            Name: "my awesome file",
+            Format: "txt",
+        },
+        "another key": 123456,
+    }
+    
+    // Leave id blank will generate a unique id.
+    fileId, err := gcfs.InsertF(data, "", gcfs.InsertFlags{
+        AutoProvide: false,
+        Strict: false,
+        Force: false,
+    })
+
+    log.Println(err == (*gcfs.Error)(nil)) // true
+}
+```
+
+##### AutoProvide flag
+
+Autofill the missing metadata when possible.
+
+##### Strict flag
+
+Toggle strict mode for the current request.
+
+##### Force flag
+
+Force document to be inserted in the database by skipping integrity checks.
+The only way to fail in Force mode is to try an update with a non JSON marshable
+interface.
 
 ### Get
 
@@ -412,6 +468,7 @@ updateSpecs := gcfs.UpdateSpec{
     Append: map[string]interface{}{
         "array-key": ["newValue1", "newValue2"],
     },
+    Force: false,
 }
 ```
 
@@ -419,6 +476,9 @@ updateSpecs := gcfs.UpdateSpec{
 
 A list of keys to remove from the document. Support the short dot syntax
 for nested keys.
+
+> 💡 Tip : remove specs are forbidden in strict mode, when Force flag is set
+to false.
 
 ##### Upsert
 
@@ -559,10 +619,6 @@ following before running any test :
 - **Configuration > Metadata**
     - Add a short syntax for nested fields "general.author"
     - Ignore spaces and case for type declaration
-- **Methods > InsertF**
-    - Add Force flag to insert document without any check
-    - Add Strict flag to disable any non required field
-    - Merge flag arguments into an unique flag interface
 - **Methods**
     - Search method and api with nefts package
  

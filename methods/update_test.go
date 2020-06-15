@@ -27,7 +27,7 @@ func TestUpdate(t *testing.T) {
 		},
 	}
 
-	fileId, err := InsertF(data, "", true)
+	fileId, err := InsertF(data, "", InsertFlags{AutoProvide: true})
 	if err != (*responses.Error)(nil) {
 		t.Fatalf("unable to insert document in database : %s", err.Error())
 	}
@@ -213,7 +213,7 @@ func TestUpdateDeleteError(t *testing.T) {
 		},
 	}
 
-	fileId, err := InsertF(data, "", true)
+	fileId, err := InsertF(data, "", InsertFlags{AutoProvide: true})
 	if err != (*responses.Error)(nil) {
 		t.Fatalf("unable to insert document in database : %s", err.Error())
 	}

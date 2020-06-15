@@ -18,7 +18,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Here the magic happens :)
-	fileId, ierr := methods.InsertF(file, "", true)
+	fileId, ierr := methods.Insert(file, "")
 
 	if ierr != (*responses.Error)(nil) {
 		http.Error(w, ierr.Message, ierr.Code)

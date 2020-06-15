@@ -52,20 +52,9 @@ func checkKeyType(key string, value interface{}, expected interface{}, empty int
 	return nil
 }
 
-func checkUpsertKeys(uk [][]interface{}) *responses.Error {
-	for _, kv := range uk {
-		key, ok := kv[0].(string)
-		valueType := reflect.TypeOf(kv[1])
-		if ok == false {
-			return &responses.Error{
-				Message: fmt.Sprintf(
-					"non string key provided in upsert parameters : encountered %v of type %s",
-					kv[0],
-					reflect.TypeOf(kv[0]).String(),
-				),
-				Code: 400,
-			}
-		}
+func checkUpsertKeys(uk map[string]interface{}) *responses.Error {
+	for key, value := range uk {
+		valueType := reflect.TypeOf(value)
 
 		if key == "" {
 			return &responses.Error{
@@ -79,7 +68,7 @@ func checkUpsertKeys(uk [][]interface{}) *responses.Error {
 			return &responses.Error{
 				Message: fmt.Sprintf(
 					"trying to update general key with %v of type %s, which is forbidden",
-					kv[1],
+					value,
 					valueType,
 				),
 				Code: 400,
@@ -89,21 +78,21 @@ func checkUpsertKeys(uk [][]interface{}) *responses.Error {
 		if key == "url" ||
 			key == "general.name" ||
 			key == "general.format" {
-			err := checkKeyType(key, kv[1], "string", "")
+			err := checkKeyType(key, value, "string", "")
 			if err != (*responses.Error)(nil) {
 				return err
 			}
 		}
 
 		if key == "general.creation_time" {
-			err := checkKeyType(key, kv[1], []string{"float64", "uint64", "int"}, 0)
+			err := checkKeyType(key, value, []string{"float64", "uint64", "int"}, 0)
 			if err != (*responses.Error)(nil) {
 				return err
 			}
 		}
 
 		if key == "general.modification_time" {
-			err := checkKeyType(key, kv[1], []string{"float64", "uint64", "int"}, nil)
+			err := checkKeyType(key, value, []string{"float64", "uint64", "int"}, nil)
 			if err != (*responses.Error)(nil) {
 				return err
 			}

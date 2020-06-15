@@ -26,6 +26,7 @@ type GeneralMetadata = metadata.GeneralData
 type Error = responses.Error
 
 type UpdateSpecs = methods.UpdateSpec
+type InsertFlags = methods.InsertFlags
 
 var Insert = methods.Insert
 var InsertF = methods.InsertF
@@ -60,7 +61,7 @@ func Setup(c Configuration) {
 			}
 
 			if config.Main.Routes.PingDatabase != "" {
-				r.Handle(config.Main.Routes.Ping, mid.ThenFunc(api.PingCouchbase)).Methods("GET")
+				r.Handle(config.Main.Routes.PingDatabase, mid.ThenFunc(api.PingCouchbase)).Methods("GET")
 			}
 
 			if config.Main.Routes.Insert != "" {

@@ -26,12 +26,12 @@ func TestInsertf(t *testing.T) {
 		},
 	}
 
-	_, err = InsertF(data, "", false)
+	_, err = InsertF(data, "", InsertFlags{AutoProvide: false})
 	if err == (*responses.Error)(nil) {
 		t.Error("insertf doesn't reject when provided incomplete metadata")
 	}
 
-	fileId, err := InsertF(data, "my_awesome_file_id", true)
+	fileId, err := InsertF(data, "my_awesome_file_id", InsertFlags{AutoProvide: true})
 	if err != (*responses.Error)(nil) {
 		t.Errorf("unable to insert data with custom id : %s", err.Error())
 	}
@@ -45,7 +45,7 @@ func TestInsertf(t *testing.T) {
 		t.Errorf("unable to delete file %s : %s", fileId, err.Error())
 	}
 
-	fileId, err = InsertF(data, "my_awesome_file_id_{ts}", true)
+	fileId, err = InsertF(data, "my_awesome_file_id_{ts}", InsertFlags{AutoProvide: true})
 	if err != (*responses.Error)(nil) {
 		t.Errorf("unable to insert data with custom id : %s", err.Error())
 	}
